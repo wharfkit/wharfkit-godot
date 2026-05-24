@@ -1,0 +1,12 @@
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = 4.2
+reloadable = true
+
+[libraries]
+macos.debug = "res://addons/wharfkit/lib/macos-arm64/libwharfkit_godot.dylib"
+macos.release = "res://addons/wharfkit/lib/macos-arm64/libwharfkit_godot.dylib"
+ios.debug = "res://addons/wharfkit/lib/ios/libwharfkit_godot.a"
+ios.release = "res://addons/wharfkit/lib/ios/libwharfkit_godot.a"
+ios.debug.simulator = "res://addons/wharfkit/lib/ios-sim/libwharfkit_godot.a"
+ios.release.simulator = "res://addons/wharfkit/lib/ios-sim/libwharfkit_godot.a"
