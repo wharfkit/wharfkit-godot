@@ -20,10 +20,23 @@ antelope-client = "0.3.1"
 wharfkit-common = "0.1.0"
 wharfkit-abicache = "0.1.0"
 wharfkit-contract = "0.1.0"
-tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "sync"] }
+wharfkit-session = "0.1.0"
+wharfkit-signing-request = "0.1.0"
+wharfkit-buoy-client = "0.1.0"
+wharfkit-godot-types = "0.1.0"
+async-trait = "0.1"
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "sync", "time"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+hex = "0.4"
+serde_json = "1.0"
+qrcode = { version = "0.14", default-features = false }
 
 [patch.crates-io]
 antelope-client = { path = "../antelope-rs/crates/antelope" }
 wharfkit-common = { path = "../wharfkit-rs/crates/wharfkit-common" }
 wharfkit-abicache = { path = "../wharfkit-rs/crates/wharfkit-abicache" }
 wharfkit-contract = { path = "../wharfkit-rs/crates/wharfkit-contract" }
+wharfkit-session = { path = "../wharfkit-rs/crates/wharfkit-session" }
+wharfkit-signing-request = { path = "../wharfkit-rs/crates/wharfkit-signing-request" }
+wharfkit-buoy-client = { path = "../wharfkit-rs/crates/wharfkit-buoy-client" }
+wharfkit-godot-types = { path = "../wharfkit-godot-types" }
