@@ -1,0 +1,12 @@
+[configuration]
+entry_symbol = "gdext_rust_init_anchor"
+compatibility_minimum = 4.2
+reloadable = true
+
+[libraries]
+macos.debug = "res://addons/wharfkit_wallet_plugin_anchor/lib/macos-arm64/libwharfkit_godot_wallet_plugin_anchor.dylib"
+macos.release = "res://addons/wharfkit_wallet_plugin_anchor/lib/macos-arm64/libwharfkit_godot_wallet_plugin_anchor.dylib"
+ios.debug = "res://addons/wharfkit_wallet_plugin_anchor/lib/ios/libwharfkit_godot_wallet_plugin_anchor.a"
+ios.release = "res://addons/wharfkit_wallet_plugin_anchor/lib/ios/libwharfkit_godot_wallet_plugin_anchor.a"
+ios.debug.simulator = "res://addons/wharfkit_wallet_plugin_anchor/lib/ios-sim/libwharfkit_godot_wallet_plugin_anchor.a"
+ios.release.simulator = "res://addons/wharfkit_wallet_plugin_anchor/lib/ios-sim/libwharfkit_godot_wallet_plugin_anchor.a"
