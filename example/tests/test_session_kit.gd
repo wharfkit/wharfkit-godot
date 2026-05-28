@@ -16,7 +16,7 @@ func _ready() -> void:
 
 func test_classes_present() -> void:
 	for c in ["WharfkitChains", "WharfkitChainDefinition", "WharfkitWalletPlugin",
-			"WharfkitUserInterface", "WharfkitEosioToken", "WharfkitWalletPluginAnchor"]:
+			"WharfkitUserInterface", "WharfkitWalletPluginAnchor"]:
 		_check(ClassDB.class_exists(c), "ClassDB missing %s" % c)
 
 func test_session_kit_class_registered() -> void:
@@ -59,9 +59,8 @@ func test_transact_flow() -> void:
 	if _session == null:
 		return
 
-	var token := WharfkitEosioToken.new()
-	var action = token.transfer("alice", "bob", "0.0001 EOS", "mocked smoke", "alice", "active")
-	_check(action is Dictionary, "token.transfer did not return a Dictionary")
+	var action := EosioToken.transfer("alice", "bob", "0.0001 EOS", "mocked smoke", "alice", "active")
+	_check(action is Dictionary, "EosioToken.transfer did not return a Dictionary")
 
 	var pending = _session.transact({"actions": [action]}, {"broadcast": false})
 	_check(pending != null, "transact() returned null pending")

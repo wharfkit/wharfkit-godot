@@ -115,8 +115,7 @@ func _on_transfer_pressed() -> void:
 
 	var actor: String = String(_session.permission_level.get("actor", ""))
 	var permission: String = String(_session.permission_level.get("permission", "active"))
-	var token := WharfkitEosioToken.new()
-	var action: Dictionary = token.transfer(
+	var action := EosioToken.transfer(
 		actor,
 		TRANSFER_RECIPIENT,
 		TRANSFER_AMOUNT,
