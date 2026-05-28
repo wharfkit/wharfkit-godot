@@ -1,3 +1,6 @@
+[workspace]
+members = ["crates/wharfkit-godot-plugin-sdk"]
+
 [package]
 name = "wharfkit-godot"
 version = "0.1.0"
@@ -23,7 +26,7 @@ wharfkit-contract = "0.1.0"
 wharfkit-session = "0.1.0"
 wharfkit-signing-request = "0.1.0"
 wharfkit-buoy-client = "0.1.0"
-wharfkit-godot-types = "0.1.0"
+wharfkit-godot-plugin-sdk = { path = "crates/wharfkit-godot-plugin-sdk", version = "0.1.0" }
 async-trait = "0.1"
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "sync", "time"] }
 tokio-util = { version = "0.7", features = ["rt"] }
@@ -39,4 +42,3 @@ wharfkit-contract = { path = "../wharfkit-rs/crates/wharfkit-contract" }
 wharfkit-session = { path = "../wharfkit-rs/crates/wharfkit-session" }
 wharfkit-signing-request = { path = "../wharfkit-rs/crates/wharfkit-signing-request" }
 wharfkit-buoy-client = { path = "../wharfkit-rs/crates/wharfkit-buoy-client" }
-wharfkit-godot-types = { path = "../wharfkit-godot-types" }
