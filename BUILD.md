@@ -20,11 +20,12 @@ xcodebuild -version        # Xcode 16.x
 
 ## Addon overview
 
-This repo ships three Godot addons:
+This repo ships two Godot addons:
 
 - `addons/wharfkit/` — core. The cdylib + GDScript orchestrator (`WharfkitSessionKit`, `WharfkitSession`, pending awaitables) + plugin-contract base classes. Required by every other addon.
 - `addons/wharfkit_renderer/` — pure-GDScript default prompt UI. Required for the sample app and for any project that wants the built-in modal.
-- `addons/wharfkit_wallet_plugin_anchor/` — Anchor wallet plugin (registers `WharfkitWalletPluginAnchor` + `WharfkitEosioToken`). The cdylib lives in the sibling repo `../wharfkit-godot-wallet-plugin-anchor/`.
+
+Wallet plugins, transact plugins, and alternative UI renderers ship as separate repos (e.g. [`wharfkit-godot-wallet-plugin-anchor`](https://github.com/wharfkit/wharfkit-godot-wallet-plugin-anchor)) with their own `addons/<plugin>/` distributions.
 
 The core addon must load before any other WharfKit addon (Godot loads addons in lexical order, so `wharfkit/` sorts ahead of `wharfkit_*/` automatically).
 
@@ -101,8 +102,9 @@ Its own `scripts/stage.sh` stages the resulting dylib into both this repo's exam
 
 `make stage` (= `./scripts/stage.sh`) populates `example/addons/`:
 
-- Mirrors canonical `addons/wharfkit/`, `addons/wharfkit_renderer/`, `addons/wharfkit_wallet_plugin_anchor/` source via `rsync` (excludes `lib/` and `*.uid`).
-- Copies built cdylibs from `target/<arch>/release/` into `example/addons/*/lib/<platform>/`.
+- Mirrors canonical `addons/wharfkit/` and `addons/wharfkit_renderer/` source via `rsync` (excludes `lib/` and `*.uid`).
+- Copies built cdylibs from `target/<arch>/release/` into `example/addons/wharfkit/lib/<platform>/`.
+- Plugin addons (e.g. `wharfkit_wallet_plugin_anchor`) are mirrored into `example/addons/` by their own repo's stage script — run e.g. `bash ../wharfkit-godot-wallet-plugin-anchor/scripts/stage.sh` in addition to `make stage` to exercise the example app with Anchor.
 - Re-signs each copied dylib (`codesign --force --sign -`) so an in-flight Godot editor doesn't reject the new file with `SIGKILL (Code Signature Invalid)`.
 
 `make release` (= `./scripts/release.sh`) populates the canonical `addons/*/lib/` directories — for producing distribution-ready addon trees (zip → AssetLib, drop into another Godot project, etc.).

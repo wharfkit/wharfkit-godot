@@ -11,11 +11,11 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TARGET="${ROOT}/target"
 EXAMPLE_ADDONS="${ROOT}/example/addons"
 
-ANCHOR_ROOT="$(cd "${ROOT}/../wharfkit-godot-wallet-plugin-anchor" 2>/dev/null && pwd)" || ANCHOR_ROOT=""
-
 # Mirror canonical addon source into example/addons/.
 # Excludes lib/ (staged below) and *.uid (Godot regenerates per-project).
-for addon in wharfkit wharfkit_renderer wharfkit_wallet_plugin_anchor; do
+# Plugin addons (e.g. wharfkit_wallet_plugin_anchor) live in their own repos
+# and are mirrored into example/addons/ by their own stage scripts.
+for addon in wharfkit wharfkit_renderer; do
     mkdir -p "${EXAMPLE_ADDONS}/${addon}"
     rsync -a --delete \
         --exclude="lib/" \
@@ -25,9 +25,7 @@ done
 echo "Mirrored canonical addon source into example/addons/"
 
 EXAMPLE_LIB="${EXAMPLE_ADDONS}/wharfkit/lib"
-ANCHOR_EXAMPLE_LIB="${EXAMPLE_ADDONS}/wharfkit_wallet_plugin_anchor/lib"
 mkdir -p "${EXAMPLE_LIB}/macos-arm64" "${EXAMPLE_LIB}/ios" "${EXAMPLE_LIB}/ios-sim"
-mkdir -p "${ANCHOR_EXAMPLE_LIB}/macos-arm64" "${ANCHOR_EXAMPLE_LIB}/ios" "${ANCHOR_EXAMPLE_LIB}/ios-sim"
 
 # Ad-hoc re-sign after copy: when cp overwrites a dylib that's currently
 # mapped in another process (e.g. an open Godot editor), macOS's code-signing
@@ -55,26 +53,3 @@ stage_pair "${TARGET}/aarch64-apple-ios/release/libwharfkit_godot.a" \
     "ios" "iOS arm64 device static lib"
 stage_pair "${TARGET}/aarch64-apple-ios-sim/release/libwharfkit_godot.a" \
     "ios-sim" "iOS arm64 sim static lib"
-
-if [ -n "${ANCHOR_ROOT}" ]; then
-    ANCHOR_DYLIB="${ANCHOR_ROOT}/target/aarch64-apple-darwin/release/libwharfkit_godot_wallet_plugin_anchor.dylib"
-    if [ ! -f "${ANCHOR_DYLIB}" ]; then
-        ANCHOR_DYLIB="${ANCHOR_ROOT}/target/release/libwharfkit_godot_wallet_plugin_anchor.dylib"
-    fi
-    if [ -f "${ANCHOR_DYLIB}" ]; then
-        cp -f "${ANCHOR_DYLIB}" "${ANCHOR_EXAMPLE_LIB}/macos-arm64/"
-        codesign --force --sign - "${ANCHOR_EXAMPLE_LIB}/macos-arm64/$(basename "${ANCHOR_DYLIB}")" 2>/dev/null || true
-        echo "Staged Anchor wallet plugin dylib"
-    fi
-
-    ANCHOR_IOS_LIB="${ANCHOR_ROOT}/target/aarch64-apple-ios/release/libwharfkit_godot_wallet_plugin_anchor.a"
-    if [ -f "${ANCHOR_IOS_LIB}" ]; then
-        cp -f "${ANCHOR_IOS_LIB}" "${ANCHOR_EXAMPLE_LIB}/ios/"
-        echo "Staged Anchor wallet plugin iOS arm64 device static lib"
-    fi
-    ANCHOR_IOSSIM_LIB="${ANCHOR_ROOT}/target/aarch64-apple-ios-sim/release/libwharfkit_godot_wallet_plugin_anchor.a"
-    if [ -f "${ANCHOR_IOSSIM_LIB}" ]; then
-        cp -f "${ANCHOR_IOSSIM_LIB}" "${ANCHOR_EXAMPLE_LIB}/ios-sim/"
-        echo "Staged Anchor wallet plugin iOS arm64 sim static lib"
-    fi
-fi
