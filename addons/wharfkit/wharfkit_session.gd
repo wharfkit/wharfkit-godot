@@ -5,13 +5,15 @@ var chain
 var permission_level: Dictionary = {}
 var _plugin: Object
 var _ui
+var _return_path: String = ""
 var _transact_in_flight: bool = false
 
-func configure(in_chain, perm: Dictionary, plugin: Object, ui) -> void:
+func configure(in_chain, perm: Dictionary, plugin: Object, ui, return_path: String = "") -> void:
 	chain = in_chain
 	permission_level = perm.duplicate() if perm != null else {}
 	_plugin = plugin
 	_ui = ui
+	_return_path = return_path
 
 func transact(args: Dictionary, opts: Dictionary = {}) -> WharfkitTransactPending:
 	var pending := WharfkitTransactPending.new()
@@ -39,6 +41,7 @@ func transact(args: Dictionary, opts: Dictionary = {}) -> WharfkitTransactPendin
 	var ctx := {
 		"chain": chain,
 		"permission_level": permission_level,
+		"return_path": _return_path,
 	}
 
 	pending._wire_plugin(_plugin, "sign_done", "sign_failed",

@@ -90,6 +90,7 @@ func _on_login_pressed() -> void:
 		"chains": [_chain],
 		"ui": ui,
 		"wallet_plugins": [wallet],
+		"return_path": "wharfkit://",
 	})
 
 	var pending: WharfkitLoginPending = _kit.login()

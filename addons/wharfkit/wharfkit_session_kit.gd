@@ -55,6 +55,7 @@ func _make_login_ctx(chain) -> Dictionary:
 			"url": chain.url_value() if chain.has_method("url_value") else "",
 		},
 		"app_name": _config.get("app_name", "WharfKit Godot"),
+		"return_path": _config.get("return_path", ""),
 	}
 
 func _finalize_login(response, pending: WharfkitLoginPending, chain, plugin) -> void:
@@ -65,5 +66,5 @@ func _finalize_login(response, pending: WharfkitLoginPending, chain, plugin) -> 
 		permission = response.get("permission_level")
 
 	var session := WharfkitSession.new()
-	session.configure(chain, permission, plugin, _config.get("ui"))
+	session.configure(chain, permission, plugin, _config.get("ui"), _config.get("return_path", ""))
 	pending._emit_done(session)
