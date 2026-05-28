@@ -6,3 +6,4 @@ addons/*/lib/
 build/
 example/.godot/
 example/addons/
+.env
