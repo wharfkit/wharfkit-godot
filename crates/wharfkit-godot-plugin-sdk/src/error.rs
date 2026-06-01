@@ -4,7 +4,7 @@ use godot::prelude::*;
 const CLASS_NAME: &str = "WharfkitError";
 
 #[repr(i32)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorKind {
     Internal = 0,
     UserRejected = 1,
@@ -67,6 +67,11 @@ impl WharfkitErrorBuilder {
         self
     }
 
+    #[doc(hidden)]
+    pub fn kind_for_test(&self) -> ErrorKind {
+        self.kind
+    }
+
     pub fn build(self) -> Gd<godot::classes::Object> {
         let class_name = StringName::from(CLASS_NAME);
         let variant = ClassDb::singleton().instantiate(&class_name);
@@ -83,5 +88,28 @@ impl WharfkitErrorBuilder {
         obj.set(&StringName::from("retryable"), &self.retryable.to_variant());
 
         obj
+    }
+}
+
+#[cfg(feature = "session")]
+mod session_conversions {
+    use wharfkit_session::WalletError;
+
+    use super::WharfkitErrorBuilder;
+
+    impl From<&WalletError> for WharfkitErrorBuilder {
+        fn from(err: &WalletError) -> Self {
+            match err {
+                WalletError::UserClosed => WharfkitErrorBuilder::user_closed("user closed prompt"),
+                WalletError::UserRejected(message) => {
+                    WharfkitErrorBuilder::user_rejected(message.clone())
+                }
+                WalletError::Cancelled => WharfkitErrorBuilder::cancelled("operation cancelled"),
+                WalletError::Expired => WharfkitErrorBuilder::expired("operation expired"),
+                WalletError::Buoy(err) => WharfkitErrorBuilder::network(format!("buoy: {err}")),
+                WalletError::Esr(err) => WharfkitErrorBuilder::internal(format!("esr: {err}")),
+                WalletError::Internal(message) => WharfkitErrorBuilder::internal(message.clone()),
+            }
+        }
     }
 }

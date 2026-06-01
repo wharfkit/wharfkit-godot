@@ -286,6 +286,8 @@ pub struct WharfkitTransactContext {
     ui: Option<Gd<Object>>,
     #[var]
     pub platform_name: GString,
+    #[var]
+    pub resolved_request: Dictionary,
     base: Base<RefCounted>,
 }
 
@@ -318,6 +320,7 @@ impl WharfkitTransactContext {
             shared,
             ui,
             platform_name: GString::from(platform_name),
+            resolved_request: Dictionary::new(),
             base,
         })
     }
