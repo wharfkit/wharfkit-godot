@@ -56,6 +56,7 @@ func _make_login_ctx(chain) -> Dictionary:
 		},
 		"app_name": _config.get("app_name", "WharfKit Godot"),
 		"return_path": _config.get("return_path", ""),
+		"ui": _config.get("ui"),
 	}
 
 func _finalize_login(response, pending: WharfkitLoginPending, chain, plugin) -> void:
