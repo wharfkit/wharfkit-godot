@@ -33,8 +33,7 @@ impl WharfkitContractKit {
     pub fn load(&self, account: Gd<WharfkitName>) -> Option<Gd<WharfkitContract>> {
         let account_inner = account.bind().inner();
         let kit_ref = self.kit.clone();
-        let result =
-            WharfkitRuntime::block_on(async move { kit_ref.load(account_inner).await });
+        let result = WharfkitRuntime::block_on(async move { kit_ref.load(account_inner).await });
         match result {
             Ok(contract) => Some(WharfkitContract::from_inner(contract, self.client.clone())),
             Err(e) => {

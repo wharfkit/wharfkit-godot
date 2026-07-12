@@ -37,14 +37,8 @@ impl WharfkitQrCode {
             }
         }
         let data = PackedByteArray::from(bytes.as_slice());
-        Image::create_from_data(
-            pixels as i32,
-            pixels as i32,
-            false,
-            Format::L8,
-            &data,
-        )
-        .unwrap_or_else(empty_image)
+        Image::create_from_data(pixels as i32, pixels as i32, false, Format::L8, &data)
+            .unwrap_or_else(empty_image)
     }
 }
 
