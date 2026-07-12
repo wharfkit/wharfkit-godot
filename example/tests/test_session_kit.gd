@@ -9,6 +9,7 @@ func _ready() -> void:
 	await test_session_kit_class_registered()
 	await test_login_flow()
 	await test_transact_flow()
+	await test_anchor_persistence()
 	await test_classes_present()
 	if _failed:
 		print("MOCKED SMOKE: FAIL")
@@ -112,4 +113,35 @@ func test_transact_flow() -> void:
 			_check(transact_chain.url_value() != "",
 				"transact ctx.chain.url_value was empty")
 	_session.queue_free()
+	await get_tree().process_frame
+
+func test_anchor_persistence() -> void:
+	var anchor := WharfkitWalletPluginAnchor.new()
+	_check(anchor.channel_snapshot().is_empty(), "fresh channel_snapshot() not empty")
+	_check(not anchor.restore_channel({"same_device": "not_a_bool"}),
+		"restore_channel accepted a malformed dict")
+	_check(not anchor.persist_channel(), "persist_channel wrote with no channel")
+
+	var fixture := {
+		"request_key": "PUB_K1_6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5BoDq63",
+		"private_key": "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3",
+		"signer_key": "PUB_K1_6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5BoDq63",
+		"channel_url": "https://cb.anchor.link/smoke-test",
+		"channel_name": "Anchor",
+		"same_device": true,
+	}
+	_check(anchor.restore_channel(fixture), "restore_channel rejected the valid fixture")
+	var snap: Dictionary = anchor.channel_snapshot()
+	_check(not snap.is_empty(), "channel_snapshot empty after restore")
+	_check(String(snap.get("channel_url", "")) == "https://cb.anchor.link/smoke-test",
+		"channel_url did not round-trip")
+
+	_check(anchor.persist_channel(), "persist_channel failed with a channel")
+	var reloaded := WharfkitWalletPluginAnchor.new()
+	_check(reloaded.load_channel(), "load_channel failed")
+	_check(String(reloaded.channel_snapshot().get("channel_url", "")) == "https://cb.anchor.link/smoke-test",
+		"channel_url did not survive persist/load")
+
+	_check(reloaded.clear_channel(), "clear_channel failed")
+	_check(reloaded.clear_channel(), "clear_channel not idempotent when file absent")
 	await get_tree().process_frame

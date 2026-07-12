@@ -61,4 +61,48 @@ var session = await pending.login_done
 print("Logged in as: ", session.permission_level)
 ```
 
+### Session persistence
+
+`WharfkitSessionKit.restore()` lets a relaunched game sign without re-pairing
+the wallet, given a dict shaped like this (built after a successful login and
+saved by the game):
+
+```gdscript
+var persisted := {
+    "anchor_channel": anchor.channel_snapshot(),
+    "permission_level": session.permission_level,
+    "chain_id": session.chain.chain_id(),
+}
+# game-provided storage, e.g. a save file or ConfigFile
+my_store.save("wharfkit_session", persisted)
+```
+
+```gdscript
+# next launch:
+var persisted = my_store.load("wharfkit_session")
+var session = kit.restore(persisted)
+if session == null:
+    # snapshot missing, malformed, or chain_id no longer matches a
+    # configured chain — fall back to a normal kit.login()
+    pass
+```
+
+`restore()` returns an unparented `WharfkitSession` (matching `login()`'s
+`_finalize_login` result) or `null` if the snapshot can't be turned into a
+usable session.
+
+`kit.logout(session)` clears the wallet plugin's own persist file (written by
+its `persist_channel()` helper, if used) but has no effect on a `persisted`
+copy the game saved itself — the game is responsible for discarding that copy
+too.
+
+> **Security:** `anchor_channel` contains the request-key **private WIF in
+> plaintext**. Persisting it — via the wallet plugin's built-in helpers or the
+> game's own storage — is plaintext-at-rest. Anyone holding the WIF plus the
+> channel URL can impersonate the paired game and push arbitrary signing
+> requests to the user's Anchor wallet, though the user still has to approve
+> each one in Anchor; it is **not** an account key and cannot itself sign
+> chain transactions. Encrypt it or use an OS keychain if your threat model
+> requires it.
+
 See `example/` in the source repo for a complete sample app.

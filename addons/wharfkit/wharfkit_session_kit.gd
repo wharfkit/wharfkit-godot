@@ -69,3 +69,49 @@ func _finalize_login(response, pending: WharfkitLoginPending, chain, plugin) -> 
 	var session := WharfkitSession.new()
 	session.configure(chain, permission, plugin, _config.get("ui"), _config.get("return_path", ""))
 	pending._emit_done(session)
+
+func restore(persisted: Dictionary) -> WharfkitSession:
+	var chains: Array = _config.get("chains", [])
+	if chains.is_empty():
+		push_error("WharfkitSessionKit.restore: no chains configured — call configure() first")
+		return null
+	var plugins: Array = _config.get("wallet_plugins", [])
+	if plugins.is_empty():
+		push_error("WharfkitSessionKit.restore: no wallet plugins configured — call configure() first")
+		return null
+	if not persisted.has("anchor_channel") or not persisted.has("permission_level") or not persisted.has("chain_id"):
+		push_error("WharfkitSessionKit.restore: persisted dict missing anchor_channel/permission_level/chain_id")
+		return null
+
+	var plugin = plugins[0]
+	var ok: bool = plugin.call("restore_channel", persisted.get("anchor_channel", {}))
+	if not ok:
+		push_error("WharfkitSessionKit.restore: restore_channel rejected the persisted snapshot")
+		return null
+
+	var chain = _select_chain(chains, String(persisted.get("chain_id", "")))
+	if chain == null:
+		push_error("WharfkitSessionKit.restore: persisted chain_id does not match any configured chain")
+		return null
+	var permission: Dictionary = persisted.get("permission_level", {})
+	var session := WharfkitSession.new()
+	session.configure(chain, permission, plugin, _config.get("ui"), _config.get("return_path", ""))
+	return session
+
+func _select_chain(chains: Array, chain_id: String):
+	for c in chains:
+		if c.has_method("chain_id") and c.chain_id() == chain_id:
+			return c
+	return null
+
+func logout(session: WharfkitSession) -> void:
+	if session == null or not is_instance_valid(session):
+		push_error("WharfkitSessionKit.logout: invalid session")
+		return
+	var plugin = session._plugin
+	if plugin == null:
+		push_error("WharfkitSessionKit.logout: session has no wallet plugin")
+		return
+	plugin.call("_logout", {})
+	if plugin.has_method("clear_channel"):
+		plugin.call("clear_channel")
