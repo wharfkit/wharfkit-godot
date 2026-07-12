@@ -8,4 +8,4 @@ See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## License
 
-[AGPL-3.0-or-later](./LICENSE)
+[MPL-2.0](./LICENSE)

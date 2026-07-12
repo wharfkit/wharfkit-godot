@@ -90,4 +90,4 @@ For substantial changes (new APIs, breaking changes, architectural decisions), p
 
 ## License
 
-Contributions to this repository are licensed under [AGPL-3.0-or-later](./LICENSE). The AGPL is a strong copyleft license; consider its implications for any project that links against this code.
+Contributions to this repository are licensed under [MPL-2.0](./LICENSE). The MPL is a weak, file-level copyleft license: if you distribute modified versions of the files in this repository, those modifications must be published under the MPL. Merely linking against or integrating this library — including a Godot game loading the addon's cdylib — does not require you to open-source your own project.
