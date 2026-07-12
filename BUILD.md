@@ -104,7 +104,15 @@ Its own `scripts/stage.sh` stages the resulting dylib into both this repo's exam
 
 - Mirrors canonical `addons/wharfkit/` and `addons/wharfkit_renderer/` source via `rsync` (excludes `lib/` and `*.uid`).
 - Copies built cdylibs from `target/<arch>/release/` into `example/addons/wharfkit/lib/<platform>/`.
-- Plugin addons (e.g. `wharfkit_wallet_plugin_anchor`) are mirrored into `example/addons/` by their own repo's stage script — run e.g. `bash ../wharfkit-godot-wallet-plugin-anchor/scripts/stage.sh` in addition to `make stage` to exercise the example app with Anchor.
+- Plugin addons (e.g. `wharfkit_wallet_plugin_anchor`) are pulled into `example/addons/` via `make bootstrap` — downloads the latest release tarball from GitHub. Pin a specific version with `ANCHOR_VERSION=v0.2.0 make bootstrap`.
+- For active local development against an unreleased sibling plugin, `make bootstrap` won't help (it only fetches published releases) and the plugin's own `scripts/stage.sh` only populates *its own* repo's `addons/…/lib/` — it does not write here. Copy the freshly built cdylib in yourself, then re-sign it so an in-flight editor doesn't reject it:
+
+  ```bash
+  make -C ../wharfkit-godot-wallet-plugin-anchor build
+  cp -f ../wharfkit-godot-wallet-plugin-anchor/target/aarch64-apple-darwin/release/libwharfkit_godot_wallet_plugin_anchor.dylib \
+        example/addons/wharfkit_wallet_plugin_anchor/lib/macos-arm64/
+  codesign --force --sign - example/addons/wharfkit_wallet_plugin_anchor/lib/macos-arm64/libwharfkit_godot_wallet_plugin_anchor.dylib
+  ```
 - Re-signs each copied dylib (`codesign --force --sign -`) so an in-flight Godot editor doesn't reject the new file with `SIGKILL (Code Signature Invalid)`.
 
 `make release` (= `./scripts/release.sh`) populates the canonical `addons/*/lib/` directories — for producing distribution-ready addon trees (zip → AssetLib, drop into another Godot project, etc.).

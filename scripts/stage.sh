@@ -13,8 +13,7 @@ EXAMPLE_ADDONS="${ROOT}/example/addons"
 
 # Mirror canonical addon source into example/addons/.
 # Excludes lib/ (staged below) and *.uid (Godot regenerates per-project).
-# Plugin addons (e.g. wharfkit_wallet_plugin_anchor) live in their own repos
-# and are mirrored into example/addons/ by their own stage scripts.
+# Sibling plugin addons are NOT staged here — see BUILD.md.
 for addon in wharfkit wharfkit_renderer; do
     mkdir -p "${EXAMPLE_ADDONS}/${addon}"
     rsync -a --delete \

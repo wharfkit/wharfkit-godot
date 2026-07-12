@@ -1,4 +1,4 @@
-.PHONY: help build build-all check fmt-check clippy test stage release run editor smoke clean
+.PHONY: help build build-all check fmt-check clippy test stage release run editor smoke clean bootstrap
 
 .DEFAULT_GOAL := help
 
@@ -26,6 +26,7 @@ help:
 	@echo "  smoke       Headless run of the mocked smoke test (no network)."
 	@echo "  release     Build all targets + populate canonical addons/*/lib/ for distribution."
 	@echo "  clean       Remove target/ and the example/addons/ mirror."
+	@echo "  bootstrap   Download + extract the latest Anchor release tarball into example/addons/."
 
 build:
 	cargo build --release --target $(TARGET_DARWIN)
@@ -64,3 +65,6 @@ smoke: stage
 clean:
 	cargo clean
 	rm -rf $(EXAMPLE_DIR)/addons
+
+bootstrap:
+	./scripts/bootstrap.sh
