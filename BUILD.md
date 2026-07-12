@@ -117,6 +117,22 @@ Its own `scripts/stage.sh` stages the resulting dylib into both this repo's exam
 
 `make release` (= `./scripts/release.sh`) populates the canonical `addons/*/lib/` directories — for producing distribution-ready addon trees (zip → AssetLib, drop into another Godot project, etc.).
 
+## Distribution
+
+Wallet-plugin addons ship as prebuilt GitHub Release archives, so consumers never need a Rust toolchain.
+
+Producing one (in the plugin's own repo): pushing a `v*.*.*` tag runs `release.yml`, which cross-compiles the
+cdylib for macOS arm64, iOS device, and iOS simulator, then publishes a `.tar.gz` + `.zip`. Both archives are
+rooted at the **addon directory** (`wharfkit_wallet_plugin_anchor/…`), not at `addons/` — `bootstrap.sh`
+extracts into `example/addons/`, so an archive rooted at `addons/` would double-nest to
+`example/addons/addons/…` and Godot would never see the plugin.
+
+Consuming one (here): `make bootstrap` — see [Staging](#staging).
+
+The plugin builds against `wharfkit-rs`, `wharfkit-godot`, and `antelope-rs` by **pinned git ref**, not by
+crates.io version, so a fresh clone of a plugin repo builds with no sibling checkouts on disk. Bump those revs
+in the plugin's `Cargo.toml` when it needs new SDK code; a rev that predates a change simply won't contain it.
+
 ## Headless smoke
 
 ```bash
